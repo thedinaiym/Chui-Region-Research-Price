@@ -1,0 +1,40 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Генерация сигнала с шумом
+t = np.linspace(0, 1, 1000, endpoint=False)
+signal = np.sin(2 * np.pi * 5 * t) + 0.5 * np.random.normal(size=len(t))
+
+# Выполнение Фурье-преобразования
+fft_result = np.fft.fft(signal)
+
+# Создание массива частот
+freqs = np.fft.fftfreq(len(fft_result), t[1] - t[0])
+
+# Определение частоты сигнала (в данном случае, 5 Гц)
+signal_freq = 5
+
+# Фильтрация - оставляем только частоты, близкие к частоте сигнала
+fft_result_filtered = np.zeros_like(fft_result)
+fft_result_filtered[np.abs(freqs) <= signal_freq] = fft_result[np.abs(freqs) <= signal_freq]
+
+# Обратное Фурье-преобразование
+filtered_signal = np.fft.ifft(fft_result_filtered)
+
+# Отображение результатов
+plt.figure(figsize=(12, 6))
+
+plt.subplot(3, 1, 1)
+plt.plot(t, signal)
+plt.title('Исходный сигнал с шумом')
+
+plt.subplot(3, 1, 2)
+plt.plot(freqs, np.abs(fft_result))
+plt.title('Спектр сигнала')
+
+plt.subplot(3, 1, 3)
+plt.plot(t, filtered_signal)
+plt.title('Отфильтрованный сигнал без шума')
+
+plt.tight_layout()
+plt.show()
